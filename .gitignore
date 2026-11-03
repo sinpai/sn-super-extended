@@ -1,0 +1,7 @@
+node_modules/
+dist/
+upstream/conflicts/
+*.log
+.DS_Store
+
+.nimbalyst/transcript-images/

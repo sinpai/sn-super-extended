@@ -1,0 +1,35 @@
+/* Rough dark palette for testing theme injection in dev/host.html (not a real Standard Notes theme). */
+:root {
+  --sn-stylekit-theme-type: dark;
+  --sn-stylekit-theme-name: dev-dark;
+  --sn-stylekit-background-color: #1b1d22;
+  --sn-stylekit-foreground-color: #e6e7ea;
+  --sn-stylekit-border-color: #2d3038;
+  --sn-stylekit-contrast-background-color: #23262d;
+  --sn-stylekit-contrast-foreground-color: #e6e7ea;
+  --sn-stylekit-contrast-border-color: #33363e;
+  --sn-stylekit-secondary-background-color: #23262d;
+  --sn-stylekit-secondary-foreground-color: #e6e7ea;
+  --sn-stylekit-secondary-border-color: #33363e;
+  --sn-stylekit-secondary-contrast-background-color: #2d3038;
+  --sn-stylekit-secondary-contrast-foreground-color: #e6e7ea;
+  --sn-stylekit-paragraph-text-color: #d4d6db;
+  --sn-stylekit-input-placeholder-color: #6b7080;
+  --sn-stylekit-input-border-color: #33363e;
+  --sn-stylekit-shadow-color: #000000;
+  --sn-stylekit-scrollbar-thumb-color: #3a3e47;
+  --sn-stylekit-passive-color-0: #a0a4ad;
+  --sn-stylekit-passive-color-1: #8a8f99;
+  --sn-stylekit-passive-color-2: #5b606b;
+  --sn-stylekit-passive-color-3: #3a3e47;
+  --sn-stylekit-passive-color-4: #2d3038;
+  --sn-stylekit-passive-color-4-opacity-variant: #5b606b3d;
+  --sn-stylekit-passive-color-5: #23262d;
+  --sn-stylekit-passive-color-6: #2d3038;
+  --sn-stylekit-passive-color-super-light: #1f2126;
+  --sn-stylekit-info-color: #4c9bf5;
+  --sn-stylekit-info-contrast-color: #ffffff;
+  --sn-stylekit-info-backdrop-color: #4c9bf51f;
+  --sn-stylekit-editor-background-color: #1b1d22;
+  --sn-stylekit-editor-foreground-color: #e6e7ea;
+}

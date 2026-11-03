@@ -1,0 +1,55 @@
+// Sizes are in em so the control scales with the editor font size.
+.task-status-node {
+  display: inline-block;
+  margin-right: 0.45em;
+  vertical-align: -0.2em;
+  user-select: none;
+}
+
+.task-status {
+  display: inline-flex;
+  gap: 0.2em;
+}
+
+.task-status__box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em;
+  height: 1.15em;
+  padding: 0;
+  border: 1.5px solid var(--sn-stylekit-passive-color-2);
+  border-radius: 0.25em;
+  background-color: transparent;
+  color: var(--sn-stylekit-passive-color-2);
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+
+  svg {
+    width: 80%;
+    height: 80%;
+  }
+
+  &:hover:not(:disabled):not([aria-checked='true']) {
+    border-color: var(--task-status-color);
+    color: var(--task-status-color);
+  }
+
+  &[aria-checked='true'] {
+    border-color: var(--task-status-color);
+    background-color: var(--task-status-color);
+    color: #fff;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--task-status-color);
+    outline-offset: 1px;
+  }
+}

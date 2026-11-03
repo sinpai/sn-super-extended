@@ -1,0 +1,35 @@
+// Mirrors packages/web/src/stylesheets/index.css.scss, limited to what the editor needs.
+// Theme variables (--sn-stylekit-*) defined here are the default (light) theme; the active Standard
+// Notes theme is injected by the component relay as a <link> after this file and overrides them.
+@import '../../packages/styles/src/Styles/colors';
+@import '../../packages/styles/src/Styles/scrollbar';
+@import '../../packages/styles/src/Styles/utils/animation';
+@import '../../web/stylesheets/theme';
+@import '../../web/stylesheets/main';
+@import '../../web/stylesheets/ui';
+@import '../../web/stylesheets/animation';
+@import '../../web/javascripts/Components/SuperEditor/Lexical/Theme/lexical.scss';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  ul,
+  ol {
+    list-style-type: revert;
+  }
+}
+
+// Plugin page: the iframe is the editor area.
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--sn-stylekit-editor-background-color);
+  color: var(--sn-stylekit-editor-foreground-color);
+}
