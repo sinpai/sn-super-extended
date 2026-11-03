@@ -2,5 +2,6 @@ export { TaskStatusNode, $createTaskStatusNode, $isTaskStatusNode } from './Task
 export type { SerializedTaskStatusNode } from './TaskStatusNode'
 export { default as TaskStatusPlugin, INSERT_TASK_STATUS_COMMAND } from './TaskStatusPlugin'
 export { TaskStatusBlock, GetTaskStatusBlockOption } from './TaskStatusBlock'
+export { TASK_STATUS_SHORTCUT } from './TaskStatusMarkdown'
 export { TaskStatuses, DefaultTaskStatus } from './TaskStatuses'
 export type { TaskStatus, TaskStatusDefinition } from './TaskStatuses'

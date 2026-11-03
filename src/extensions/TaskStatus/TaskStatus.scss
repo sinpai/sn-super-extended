@@ -1,9 +1,20 @@
 // Sizes are in em so the control scales with the editor font size.
+// Width of the boxes plus gaps and margin: 3 × 1.15em + 2 × 0.2em + 0.45em.
+$task-status-width: 4.3em;
+
 .task-status-node {
   display: inline-block;
   margin-right: 0.45em;
   vertical-align: -0.2em;
+  text-indent: 0;
   user-select: none;
+}
+
+// Hanging indent, like a checklist item: wrapped lines line up with the text, not with the boxes.
+// Margin rather than padding so Lexical's indentation (padding-inline-start) still works.
+:is(p, h1, h2, h3, h4, h5, h6):has(> .task-status-node:first-child) {
+  margin-left: $task-status-width;
+  text-indent: -$task-status-width;
 }
 
 .task-status {

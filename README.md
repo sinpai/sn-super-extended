@@ -21,13 +21,14 @@ Everything from Super: the formatting toolbar, the `/` block menu, Markdown shor
 
 ### Task Status
 
-Three boxes at the start of a line: **To do** (blue), **In progress** (orange) and **Done** (green). The selected box is filled with its color and the other two are gray. Click a box to change the status.
+Three boxes at the start of a line: **To do** (blue), **In progress** (orange) and **Done** (green). The selected box is filled with its color and the other two are gray. Click a box to change the status. Task lines work like checklist items:
 
-- Add it by typing `/task`, or from the toolbar's block menu → **Task Status**. It applies to the current line, or to every selected line.
-- Press Enter on a task line to start the next task. Press Enter on an empty task line to end the list.
+- Type `][` and a space at the start of a line, the same way `[]` and a space makes a checkbox. You can also type `/task`, or use the toolbar's block menu → **Task Status** to convert the current line or every selected line.
+- Press Enter to start the next task (To do). Enter at the start of a task adds an empty task above it. Enter on an empty task ends the list.
+- The boxes stay at the start of the line: the cursor can't go in front of them, and long text wraps under the text rather than under the boxes.
 - Backspace right after the boxes turns the line back into normal text.
-- Works in paragraphs, headings, quotes, list items and table cells.
-- Markdown preview and copy as plain text show the status as `[ ]`, `[/]` or `[x]`.
+- Works in paragraphs, headings, quotes, list items, table cells and Daily blocks.
+- Markdown preview and copy as plain text show the status as `[ ]`, `[/]` or `[x]`. Markdown lines that start with `][ ` become task lines when a Markdown note is opened.
 
 ### Daily
 

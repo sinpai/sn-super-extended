@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { $isListItemNode } from '@lexical/list'
+import { $createListItemNode, $isListItemNode } from '@lexical/list'
 import { $isHeadingNode, $isQuoteNode } from '@lexical/rich-text'
 import { $findMatchingParent, mergeRegister } from '@lexical/utils'
 import {
+  $createParagraphNode,
   $getSelection,
   $isElementNode,
   $isParagraphNode,
@@ -14,8 +15,11 @@ import {
   createCommand,
   ElementNode,
   INSERT_PARAGRAPH_COMMAND,
+  KEY_ARROW_LEFT_COMMAND,
   LexicalCommand,
   LexicalNode,
+  PointType,
+  SELECTION_CHANGE_COMMAND,
 } from 'lexical'
 import { $createTaskStatusNode, $isTaskStatusNode, TaskStatusNode } from './TaskStatusNode'
 
@@ -38,11 +42,30 @@ function $isTaskLine(line: ElementNode): boolean {
   return $isTaskStatusNode(line.getFirstChild())
 }
 
-/** A task line with nothing typed after the status control. */
+/** A task line with nothing typed after the status boxes. */
 function $isEmptyTaskLine(line: ElementNode): boolean {
   return line
     .getChildren()
     .every((child) => $isTaskStatusNode(child) || ($isTextNode(child) && child.getTextContent().trim() === ''))
+}
+
+/** Whether a point sits right where the task's text starts, i.e. directly after the status boxes. */
+function $isAtTextStart(point: PointType, line: ElementNode): boolean {
+  if (point.type === 'element' && point.key === line.getKey()) {
+    return point.offset <= 1
+  }
+  if (point.offset !== 0) {
+    return false
+  }
+  let node: LexicalNode | null = point.getNode()
+  while (node && !node.is(line)) {
+    const previous: LexicalNode | null = node.getPreviousSibling()
+    if (previous && !$isTaskStatusNode(previous)) {
+      return false
+    }
+    node = node.getParent()
+  }
+  return node !== null
 }
 
 function $prependTaskStatus(line: ElementNode): TaskStatusNode {
@@ -57,10 +80,13 @@ function $prependTaskStatus(line: ElementNode): TaskStatusNode {
 }
 
 /**
- * - INSERT_TASK_STATUS_COMMAND adds a "To do" status to the start of each selected line.
- * - Enter at the end of a task line starts a new task line (like a checklist).
- * - Enter on an empty task line removes the status, ending the task list.
- * - Backspace right after the status removes it (Lexical's default for inline decorators).
+ * Makes task lines behave like checklist items:
+ * - the boxes stay at the start of the line: the caret can't go in front of them, and a status
+ *   that ends up in the middle of a line (lines merged, pasted into text) is dropped
+ * - Enter starts a new task line (To do); Enter at the start of a task adds an empty task above;
+ *   Enter on an empty task line ends the list
+ * - Backspace right after the boxes turns the line back into normal text (Lexical's default)
+ * - INSERT_TASK_STATUS_COMMAND (block menu, toolbar) turns the selected lines into task lines
  */
 export default function TaskStatusPlugin(): null {
   const [editor] = useLexicalComposerContext()
@@ -121,6 +147,13 @@ export default function TaskStatusPlugin(): null {
             return true
           }
 
+          if ($isAtTextStart(selection.anchor, line)) {
+            const above = $isListItemNode(line) ? $createListItemNode() : $createParagraphNode()
+            above.append($createTaskStatusNode())
+            line.insertBefore(above)
+            return true
+          }
+
           const newLine = selection.insertParagraph()
           if (newLine && $isElementNode(newLine) && !$isTaskLine(newLine)) {
             const wasEmpty = newLine.isEmpty()
@@ -133,6 +166,64 @@ export default function TaskStatusPlugin(): null {
         },
         COMMAND_PRIORITY_LOW,
       ),
+
+      // Keep the caret (and single-line selections) after the boxes, like a checkbox.
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        () => {
+          const selection = $getSelection()
+          if (!$isRangeSelection(selection)) {
+            return false
+          }
+          const line = $getLine(selection.anchor.getNode())
+          if (!line || !$isTaskLine(line)) {
+            return false
+          }
+          const focusLine = $getLine(selection.focus.getNode())
+          if (!focusLine || !focusLine.is(line)) {
+            return false
+          }
+          for (const point of [selection.anchor, selection.focus]) {
+            if (point.type === 'element' && point.key === line.getKey() && point.offset === 0) {
+              point.set(line.getKey(), 1, 'element')
+            }
+          }
+          return false
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+
+      // Left arrow at the start of a task's text goes to the previous line instead of in front of the boxes.
+      editor.registerCommand(
+        KEY_ARROW_LEFT_COMMAND,
+        (event) => {
+          const selection = $getSelection()
+          if (!$isRangeSelection(selection) || !selection.isCollapsed() || event.shiftKey) {
+            return false
+          }
+          const line = $getLine(selection.anchor.getNode())
+          if (!line || !$isTaskLine(line) || !$isAtTextStart(selection.anchor, line)) {
+            return false
+          }
+          event.preventDefault()
+          if (line.getPreviousSibling()) {
+            line.selectPrevious()
+          }
+          return true
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+
+      // A status only makes sense at the start of a line.
+      editor.registerNodeTransform(TaskStatusNode, (node) => {
+        let previous = node.getPreviousSibling()
+        while ($isTextNode(previous) && previous.getTextContent() === '') {
+          previous = previous.getPreviousSibling()
+        }
+        if (previous) {
+          node.remove()
+        }
+      }),
     )
   }, [editor])
 

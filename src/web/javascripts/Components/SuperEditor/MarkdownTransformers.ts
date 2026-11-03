@@ -33,6 +33,7 @@ import {
   RemoteImageNode,
 } from './Plugins/RemoteImagePlugin/RemoteImageNode'
 import { $createInlineFileNode, $isInlineFileNode, InlineFileNode } from './Plugins/InlineFilePlugin/InlineFileNode'
+import { TASK_STATUS_SHORTCUT } from '@extensions/TaskStatus/TaskStatusMarkdown' // [sn-super-extended]
 
 const HorizontalRule: ElementTransformer = {
   dependencies: [HorizontalRuleNode],
@@ -245,6 +246,7 @@ export const TABLE: ElementTransformer = {
 export const MarkdownTransformers = [
   TABLE,
   CHECK_LIST,
+  TASK_STATUS_SHORTCUT, // [sn-super-extended] "][" + space starts a task line
   IMAGE,
   INLINE_FILE,
   ...ELEMENT_TRANSFORMERS,
