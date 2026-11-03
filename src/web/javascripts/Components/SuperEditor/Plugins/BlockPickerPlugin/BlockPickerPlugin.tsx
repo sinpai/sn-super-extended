@@ -31,6 +31,7 @@ import { GetCollapsibleBlockOption } from '../Blocks/Collapsible'
 import { GetUploadFileOption } from '../Blocks/File'
 import { c } from 'ttag'
 import { GetTaskStatusBlockOption } from '@extensions/TaskStatus' // [sn-super-extended]
+import { GetDailyBlockOption } from '@extensions/Daily' // [sn-super-extended]
 
 export default function BlockPickerMenuPlugin({ popoverZIndex }: { popoverZIndex?: string }): JSX.Element {
   const [editor] = useLexicalComposerContext()
@@ -78,6 +79,7 @@ export default function BlockPickerMenuPlugin({ popoverZIndex }: { popoverZIndex
       GetJustifyAlignBlockOption(editor),
       GetPasswordBlockOption(editor),
       GetCollapsibleBlockOption(editor),
+      GetDailyBlockOption(editor), // [sn-super-extended]
     ]
 
     const dynamicOptions = [

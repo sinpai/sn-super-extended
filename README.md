@@ -29,6 +29,21 @@ Three boxes at the start of a line: **To do** (blue), **In progress** (orange) a
 - Works in paragraphs, headings, quotes, list items and table cells.
 - Markdown preview and copy as plain text show the status as `[ ]`, `[/]` or `[x]`.
 
+### Daily
+
+Type `/daily` to insert an open collapsible section named **Daily** for stand-up notes:
+
+```
+yesterday:
+
+
+today:
+
+
+```
+
+The cursor starts on the empty line under "yesterday:". Daily is made of Super's regular collapsible block, so notes that use it also open in built-in Super.
+
 ## Good to know
 
 ### Differences from built-in Super
@@ -87,7 +102,7 @@ src/
     PluginApplication.ts     The parts of upstream's WebApplication the editor uses
     PluginRoot.tsx           Loads the note, converts non-Super text, renders the editor
     config.ts                Plugin identifier, name and limits
-  extensions/            Features added in this project (TaskStatus). Imported as `@extensions/`
+  extensions/            Features added in this project (TaskStatus, Daily). Imported as `@extensions/`
   web/javascripts/       Copied from standardnotes/app packages/web/src/javascripts, same paths (`@/`)
   web/stylesheets/       Copied from packages/web/src/stylesheets
   packages/              Copied subsets of other packages in the monorepo (icons, keyboard handling, ...)
@@ -114,6 +129,7 @@ Smaller changes inside otherwise unchanged files are marked with `[sn-super-exte
 ### Adding features
 
 - **A block for the `/` menu or toolbar:** follow `src/extensions/TaskStatus/TaskStatusBlock.tsx`, or the upstream blocks in `Components/SuperEditor/Plugins/Blocks/`. Register it in `BlockPickerPlugin/BlockPickerPlugin.tsx` and/or `ToolbarPlugin/ToolbarPlugin.tsx`.
+- **A template like Daily:** copy `src/extensions/Daily/DailyBlock.tsx` and change the title and lines in `DailyTemplate`.
 - **Editor behavior (a Lexical plugin):** mount it inside `<BlocksEditor>` in `SuperEditor.tsx`.
 - **A new node type:** register it in `Lexical/Nodes/AllNodes.ts`. Built-in Super can't open notes that contain node types it doesn't know. Once notes use a node, keep its `getType()` value.
 - **Settings:** `const [value, setValue] = usePluginSetting('key')`, after adding the key to `PluginSettings` in `src/plugin/PluginPreferences.ts`. Values are stored with the plugin and sync across devices.

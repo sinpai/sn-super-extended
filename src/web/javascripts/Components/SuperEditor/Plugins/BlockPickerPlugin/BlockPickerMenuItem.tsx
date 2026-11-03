@@ -30,6 +30,8 @@ export function BlockPickerMenuItem({
       aria-selected={isSelected}
       id={'typeahead-item-' + index}
       onMouseEnter={onMouseEnter}
+      // [sn-super-extended] Keep focus in the editor when an option is clicked, so you can type right away.
+      onMouseDown={(event) => event.preventDefault()}
       onClick={onClick}
     >
       <Icon type={option.iconName} className="h-5 w-5 flex-shrink-0" />
