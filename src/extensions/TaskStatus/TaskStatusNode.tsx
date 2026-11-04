@@ -70,10 +70,15 @@ export class TaskStatusNode extends DecoratorNode<JSX.Element> {
   createDOM(): HTMLElement {
     const element = document.createElement('span')
     element.className = 'task-status-node'
+    // Lets CSS style the whole line by status, e.g. strike through cancelled tasks.
+    element.dataset.status = this.__status
     return element
   }
 
-  updateDOM(): false {
+  updateDOM(prevNode: TaskStatusNode, dom: HTMLElement): false {
+    if (prevNode.__status !== this.__status) {
+      dom.dataset.status = this.__status
+    }
     return false
   }
 

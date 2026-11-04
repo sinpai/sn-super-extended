@@ -20,6 +20,15 @@ $task-status-width: 1.6em;
   text-indent: -$task-status-width;
 }
 
+// Cancelled tasks: strike through the line's text and dim it, like a checked checklist item. The status
+// box is an inline-block, so the line doesn't cross it. Display only; the note's text isn't changed.
+// Scoped under #blocks-editor to win over Super's own `#blocks-editor p { color }`.
+#blocks-editor
+  :is(p, h1, h2, h3, h4, h5, h6, li, blockquote):has(> .task-status-node[data-status='cancelled']:first-child) {
+  color: var(--sn-stylekit-passive-color-1);
+  text-decoration: line-through;
+}
+
 .task-status {
   position: relative;
   display: inline-flex;

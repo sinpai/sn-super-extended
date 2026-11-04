@@ -1,4 +1,4 @@
-export type TaskStatus = 'todo' | 'in-progress' | 'done'
+export type TaskStatus = 'todo' | 'in-progress' | 'done' | 'cancelled'
 
 export type TaskStatusDefinition = {
   id: TaskStatus
@@ -9,11 +9,15 @@ export type TaskStatusDefinition = {
   marker: string
 }
 
-/** The three boxes, in display order. Change labels or colors here. */
+/**
+ * The statuses, in the order the picker shows them. Change labels or colors here.
+ * Lines with a cancelled task are struck through (see TaskStatus.scss).
+ */
 export const TaskStatuses: readonly TaskStatusDefinition[] = [
   { id: 'todo', label: 'To do', color: '#086dd6', marker: '[ ]' },
   { id: 'in-progress', label: 'In progress', color: '#f97316', marker: '[/]' },
   { id: 'done', label: 'Done', color: '#16a34a', marker: '[x]' },
+  { id: 'cancelled', label: 'Cancelled', color: '#dc2626', marker: '[-]' },
 ]
 
 export const DefaultTaskStatus: TaskStatus = 'todo'

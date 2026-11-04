@@ -35,6 +35,12 @@ function StatusIcon({ status }: { status: TaskStatus }) {
           />
         </svg>
       )
+    case 'cancelled':
+      return (
+        <svg viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M3.6 3.6 8.4 8.4M8.4 3.6 3.6 8.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      )
   }
 }
 
