@@ -33,6 +33,20 @@ import { c } from 'ttag'
 import { GetTaskStatusBlockOption } from '@extensions/TaskStatus' // [sn-super-extended]
 import { GetDailyBlockOption } from '@extensions/Daily' // [sn-super-extended]
 
+/**
+ * [sn-super-extended] Upstream always opens the menu above the cursor on phones. Inside the plugin frame
+ * there is no app header above the editor, so near the top of a note the menu got squeezed into a sliver.
+ * On phones, open it on the side with more room.
+ */
+function getBlockPickerSide(anchor: HTMLElement): 'top' | 'bottom' {
+  if (!isMobileScreen()) {
+    return 'bottom'
+  }
+  const rect = anchor.getBoundingClientRect()
+  const viewportHeight = document.documentElement.clientHeight
+  return rect.top > viewportHeight - rect.bottom ? 'top' : 'bottom'
+}
+
 export default function BlockPickerMenuPlugin({ popoverZIndex }: { popoverZIndex?: string }): JSX.Element {
   const [editor] = useLexicalComposerContext()
   const application = useApplication()
@@ -137,7 +151,7 @@ export default function BlockPickerMenuPlugin({ popoverZIndex }: { popoverZIndex
               anchorElement={anchorElementRef.current}
               open={true}
               disableMobileFullscreenTakeover={true}
-              side={isMobileScreen() ? 'top' : 'bottom'}
+              side={getBlockPickerSide(anchorElementRef.current)}
               maxHeight={(mh) => mh / 2}
               overrideZIndex={popoverZIndex}
             >
