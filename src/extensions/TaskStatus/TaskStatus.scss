@@ -7,7 +7,9 @@ $task-status-width: 1.6em;
 
 .task-status-node {
   display: inline-block;
-  margin-right: 0.45em;
+  // The gap before the text is padding, not margin: on an empty task line the browser draws the caret at
+  // the element's border edge, so with a margin it sat right against the box until you typed.
+  padding-right: 0.45em;
   vertical-align: -0.2em;
   text-indent: 0;
   user-select: none;

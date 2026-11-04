@@ -5,11 +5,13 @@ import { $isHeadingNode, $isQuoteNode } from '@lexical/rich-text'
 import { $findMatchingParent, mergeRegister } from '@lexical/utils'
 import {
   $createParagraphNode,
+  $getNearestNodeFromDOMNode,
   $getSelection,
   $isElementNode,
   $isParagraphNode,
   $isRangeSelection,
   $isTextNode,
+  CLICK_COMMAND,
   COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_LOW,
   createCommand,
@@ -209,6 +211,25 @@ export default function TaskStatusPlugin(): null {
           if (line.getPreviousSibling()) {
             line.selectPrevious()
           }
+          return true
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+
+      // The gap between the status box and the text is part of the (non-editable) status element, so the
+      // browser doesn't place the caret when it's clicked. Put it at the start of the task's text.
+      editor.registerCommand(
+        CLICK_COMMAND,
+        (event) => {
+          const target = event.target
+          if (!(target instanceof HTMLElement) || !target.classList.contains('task-status-node')) {
+            return false
+          }
+          const node = $getNearestNodeFromDOMNode(target)
+          if (!$isTaskStatusNode(node)) {
+            return false
+          }
+          node.selectNext(0, 0)
           return true
         },
         COMMAND_PRIORITY_LOW,
