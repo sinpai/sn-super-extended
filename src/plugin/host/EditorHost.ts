@@ -19,6 +19,14 @@ export type NoteUpdateInfo = {
   textChangedElsewhere: boolean
 }
 
+/** What is known about the connection to Standard Notes, for troubleshooting. */
+export type ConnectionInfo = {
+  /** Whether Standard Notes sent its "component-registered" handshake. */
+  registered: boolean
+  /** Origin of the first message from the app ("null" on Android, where the app runs from file://). */
+  appOrigin: string | undefined
+}
+
 export type HostCallbacks = {
   onReady: () => void
   onNote: (note: HostNote, info: NoteUpdateInfo) => void
@@ -35,6 +43,7 @@ export interface EditorHost {
   /** Environment string as reported by the host, e.g. "web", "desktop", "native-mobile-web". */
   readonly environment: string | undefined
   readonly settings: SettingsStorage
+  getConnectionInfo?(): ConnectionInfo
   start(callbacks: HostCallbacks): void
   saveNote(uuid: string, text: string, previewPlain: string): void
   destroy(): void

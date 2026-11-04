@@ -32,7 +32,6 @@
     "@lexical/utils": "0.49.0",
     "@radix-ui/react-slot": "1.0.2",
     "@react-pdf/renderer": "4.5.1",
-    "@standardnotes/component-relay": "2.2.2",
     "comlink": "4.4.1",
     "dayjs": "1.11.10",
     "lexical": "0.49.0",

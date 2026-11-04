@@ -1,3 +1,4 @@
+import './plugin/diagnostics'
 import { createRoot } from 'react-dom/client'
 import './plugin/styles/index.scss'
 import { ErrorBoundary } from '@/Utils/ErrorBoundary'

@@ -7,6 +7,7 @@ import { PluginApplication, parseEnvironment, parsePlatform } from './PluginAppl
 import { PluginNoteController } from './PluginNoteController'
 import { PluginPreferences } from './PluginPreferences'
 import { PreparedContent, prepareNoteContent } from './editor/SuperContent'
+import { ConnectionProblem } from './ConnectionProblem'
 
 type LoadedNote = {
   controller: PluginNoteController
@@ -42,10 +43,22 @@ function UnsupportedContent() {
   )
 }
 
+/** How long to wait for the note before showing ConnectionProblem instead of a blank editor. */
+const NoteWaitTimeoutMs = 6000
+
 export function PluginRoot({ host }: { host: EditorHost }) {
   const [application, setApplication] = useState<PluginApplication>()
   const [loaded, setLoaded] = useState<LoadedNote>()
   const [dismissedNotice, setDismissedNotice] = useState<string>()
+  const [waitedTooLong, setWaitedTooLong] = useState(false)
+
+  useEffect(() => {
+    if (host.kind !== 'standard-notes') {
+      return
+    }
+    const timer = setTimeout(() => setWaitedTooLong(true), NoteWaitTimeoutMs)
+    return () => clearTimeout(timer)
+  }, [host])
 
   useEffect(() => {
     let app: PluginApplication | undefined
@@ -91,7 +104,7 @@ export function PluginRoot({ host }: { host: EditorHost }) {
   }, [host])
 
   if (!application || !loaded) {
-    return null
+    return waitedTooLong ? <ConnectionProblem host={host} /> : null
   }
 
   const { controller, note, content } = loaded

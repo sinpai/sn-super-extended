@@ -108,6 +108,7 @@ src/
   web/stylesheets/       Copied from packages/web/src/stylesheets
   packages/              Copied subsets of other packages in the monorepo (icons, keyboard handling, ...)
   compat/                Small stand-ins for the @standardnotes/* package entry points
+  vendor/component-relay/  Standard Notes' plugin messaging library, copied with an Android fix (see below)
 dev/                     Test harness (dev/host.html)
 docs/                    README assets
 upstream/manifest.json   Every copied upstream file, with the hash it was last synced from
@@ -126,6 +127,8 @@ Upstream files that need the Standard Notes app internals are replaced by plugin
 - `Components/ApplicationProvider.tsx`, `Components/KeyboardServiceProvider.tsx`, `Hooks/usePreference.tsx`, `NativeMobileWeb/useAndroidBackHandler.tsx`
 
 Smaller changes inside otherwise unchanged files are marked with `[sn-super-extended]`. To list them, run `grep -rn "\[sn-super-extended\]" src`.
+
+The plugin talks to Standard Notes through a copy of [`@standardnotes/component-relay`](https://github.com/standardnotes/component-relay) 2.2.2 in `src/vendor/component-relay/`. On Android the app runs from `file://` inside Chromium, so the plugin sees the app's origin as `"null"`. The upstream relay then replies with `postMessage(..., "null")`, which throws, and the editor stays blank. The copy replies with `"*"` when the app's origin isn't a real http(s) origin, and only accepts messages from the embedding window. If the note still doesn't arrive within a few seconds, the plugin shows a message with troubleshooting details instead of a blank editor.
 
 ### Adding features
 

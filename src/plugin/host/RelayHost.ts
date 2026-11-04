@@ -1,5 +1,5 @@
-import ComponentRelay from '@standardnotes/component-relay'
-import { EditorHost, HostCallbacks, HostNote, NoteUpdateInfo } from './EditorHost'
+import ComponentRelay from '../../vendor/component-relay/componentRelay'
+import { ConnectionInfo, EditorHost, HostCallbacks, HostNote, NoteUpdateInfo } from './EditorHost'
 import { SettingsStorage } from '../PluginPreferences'
 
 const AppDataDomain = 'org.standardnotes.sn'
@@ -39,7 +39,7 @@ function toHostNote(item: RelayItem): HostNote {
 }
 
 /**
- * Talks to Standard Notes through @standardnotes/component-relay (postMessage).
+ * Talks to Standard Notes through the component relay (postMessage); see src/vendor/component-relay.
  *
  * Standard Notes sends its one-time "component-registered" handshake on the iframe's load event,
  * so the relay is created in the constructor (call it at module load, before React renders) and
@@ -50,6 +50,7 @@ export class RelayHost implements EditorHost {
   private relay: ComponentRelay
   private callbacks?: HostCallbacks
   private isReady = false
+  private connection: ConnectionInfo = { registered: false, appOrigin: undefined }
   private bufferedNote?: { note: HostNote; info: NoteUpdateInfo }
   /** The most recent version of the note Standard Notes sent us. */
   private latestItem?: RelayItem
@@ -64,6 +65,9 @@ export class RelayHost implements EditorHost {
   }
 
   constructor() {
+    // Record the handshake separately from the relay, so a failure inside the relay can still be reported.
+    window.addEventListener('message', this.recordHandshake)
+
     this.relay = new ComponentRelay({
       targetWindow: window,
       options: {
@@ -77,6 +81,28 @@ export class RelayHost implements EditorHost {
     })
 
     this.relay.streamContextItem((item: RelayItem) => this.receiveItem(item))
+  }
+
+  private recordHandshake = (event: MessageEvent): void => {
+    if (event.source !== window.parent || this.connection.registered) {
+      return
+    }
+    let data: unknown = event.data
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data)
+      } catch {
+        return
+      }
+    }
+    if ((data as { action?: string } | null)?.action === 'component-registered') {
+      this.connection = { registered: true, appOrigin: event.origin }
+      window.removeEventListener('message', this.recordHandshake)
+    }
+  }
+
+  getConnectionInfo(): ConnectionInfo {
+    return this.connection
   }
 
   get platform(): string | undefined {
@@ -162,6 +188,7 @@ export class RelayHost implements EditorHost {
 
   destroy(): void {
     this.callbacks = undefined
+    window.removeEventListener('message', this.recordHandshake)
     this.relay.deinit()
   }
 }
