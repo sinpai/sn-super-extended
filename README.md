@@ -2,7 +2,7 @@
 
 The **Super** rich-text editor from [Standard Notes](https://standardnotes.com), packaged as a custom editor plugin, with extra blocks on top. Notes are stored in the same format as built-in Super notes.
 
-<img src="docs/screenshot.png" alt="Super Extended: a note with task status lines and a checklist" width="700">
+<img src="docs/screenshot.png" alt="Super Extended: a note with task status lines, one showing the status picker, and a checklist" width="700">
 
 Not affiliated with or endorsed by Standard Notes.
 
@@ -21,12 +21,12 @@ Everything from Super: the formatting toolbar, the `/` block menu, Markdown shor
 
 ### Task Status
 
-Three boxes at the start of a line: **To do** (blue), **In progress** (orange) and **Done** (green). The selected box is filled with its color and the other two are gray. Click a box to change the status. Task lines work like checklist items:
+A status box at the start of a line: **To do** (blue), **In progress** (orange) or **Done** (green). Hover over it to show all three and click the one you want. On phones, tap it instead. Task lines work like checklist items:
 
 - Type `][` and a space at the start of a line, the same way `[]` and a space makes a checkbox. You can also type `/task`, or use the toolbar's block menu → **Task Status** to convert the current line or every selected line.
 - Press Enter to start the next task (To do). Enter at the start of a task adds an empty task above it. Enter on an empty task ends the list.
-- The boxes stay at the start of the line: the cursor can't go in front of them, and long text wraps under the text rather than under the boxes.
-- Backspace right after the boxes turns the line back into normal text.
+- The status stays at the start of the line: the cursor can't go in front of it, and long text wraps under the text rather than under the box.
+- Backspace right after the status turns the line back into normal text.
 - Works in paragraphs, headings, quotes, list items, table cells and Daily blocks.
 - Markdown preview and copy as plain text show the status as `[ ]`, `[/]` or `[x]`. Markdown lines that start with `][ ` become task lines when a Markdown note is opened.
 

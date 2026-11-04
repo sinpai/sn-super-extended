@@ -1,6 +1,9 @@
 // Sizes are in em so the control scales with the editor font size.
-// Width of the boxes plus gaps and margin: 3 × 1.15em + 2 × 0.2em + 0.45em.
-$task-status-width: 4.3em;
+$box-size: 1.15em;
+$gap: 0.2em;
+$picker-padding: 0.2em;
+// Width of the status box plus the space after it.
+$task-status-width: 1.6em;
 
 .task-status-node {
   display: inline-block;
@@ -10,7 +13,7 @@ $task-status-width: 4.3em;
   user-select: none;
 }
 
-// Hanging indent, like a checklist item: wrapped lines line up with the text, not with the boxes.
+// Hanging indent, like a checklist item: wrapped lines line up with the text, not with the box.
 // Margin rather than padding so Lexical's indentation (padding-inline-start) still works.
 :is(p, h1, h2, h3, h4, h5, h6):has(> .task-status-node:first-child) {
   margin-left: $task-status-width;
@@ -18,16 +21,44 @@ $task-status-width: 4.3em;
 }
 
 .task-status {
+  position: relative;
   display: inline-flex;
-  gap: 0.2em;
+}
+
+// All three statuses, drawn over the line so the text doesn't move. Its first box sits exactly
+// on top of the current status box.
+.task-status__picker {
+  position: absolute;
+  z-index: 2;
+  top: calc(-#{$picker-padding} - 1px);
+  left: calc(-#{$picker-padding} - 1px);
+  display: none;
+  gap: $gap;
+  padding: $picker-padding;
+  border: 1px solid var(--sn-stylekit-border-color);
+  border-radius: 0.4em;
+  background-color: var(--sn-stylekit-background-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+// Mouse and trackpad: open on hover. Touch screens have no hover; a tap opens it (.task-status--open).
+@media (hover: hover) {
+  .task-status:not(.task-status--readonly):not(.task-status--picked):hover .task-status__picker {
+    display: inline-flex;
+  }
+}
+
+.task-status--open .task-status__picker {
+  display: inline-flex;
 }
 
 .task-status__box {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 1.15em;
-  height: 1.15em;
+  width: $box-size;
+  height: $box-size;
   padding: 0;
   border: 1.5px solid var(--sn-stylekit-passive-color-2);
   border-radius: 0.25em;
@@ -44,12 +75,12 @@ $task-status-width: 4.3em;
     height: 80%;
   }
 
-  &:hover:not(:disabled):not([aria-checked='true']) {
+  &:hover:not(:disabled):not(.is-selected) {
     border-color: var(--task-status-color);
     color: var(--task-status-color);
   }
 
-  &[aria-checked='true'] {
+  &.is-selected {
     border-color: var(--task-status-color);
     background-color: var(--task-status-color);
     color: #fff;
