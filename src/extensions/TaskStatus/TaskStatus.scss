@@ -36,13 +36,13 @@ $task-status-width: 1.6em;
   display: inline-flex;
 }
 
-// All three statuses, drawn over the line so the text doesn't move. Its first box sits exactly
-// on top of the current status box.
+// All statuses, opened by clicking the current one. Drawn over the line, right of the current box,
+// so the text doesn't move and the current box stays visible to close it again.
 .task-status__picker {
   position: absolute;
   z-index: 2;
   top: calc(-#{$picker-padding} - 1px);
-  left: calc(-#{$picker-padding} - 1px);
+  left: calc(#{$box-size} + 0.3em);
   display: none;
   gap: $gap;
   padding: $picker-padding;
@@ -50,13 +50,6 @@ $task-status-width: 1.6em;
   border-radius: 0.4em;
   background-color: var(--sn-stylekit-background-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
-}
-
-// Mouse and trackpad: open on hover. Touch screens have no hover; a tap opens it (.task-status--open).
-@media (hover: hover) {
-  .task-status:not(.task-status--readonly):not(.task-status--picked):hover .task-status__picker {
-    display: inline-flex;
-  }
 }
 
 .task-status--open .task-status__picker {

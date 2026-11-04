@@ -21,7 +21,7 @@ Everything from Super: the formatting toolbar, the `/` block menu, Markdown shor
 
 ### Task Status
 
-A status box at the start of a line: **To do** (blue), **In progress** (orange), **Done** (green) or **Cancelled** (red). Hover over it to show all four and click the one you want. On phones, tap it instead. Cancelled tasks are struck through and dimmed, like checked checklist items; only the display changes, the text stays as you typed it. Task lines work like checklist items:
+A status box at the start of a line: **To do** (blue), **In progress** (orange), **Done** (green) or **Cancelled** (red). Click it (tap on phones) to show all four next to it, then pick one. Clicking the box again, clicking elsewhere or pressing Escape closes them. Cancelled tasks are struck through and dimmed, like checked checklist items; only the display changes, the text stays as you typed it. Task lines work like checklist items:
 
 - Type `][` and a space at the start of a line, the same way `[]` and a space makes a checkbox. You can also type `/task`, or use the toolbar's block menu → **Task Status** to convert the current line or every selected line.
 - Press Enter to start the next task (To do). Enter at the start of a task adds an empty task above it. Enter on an empty task ends the list.

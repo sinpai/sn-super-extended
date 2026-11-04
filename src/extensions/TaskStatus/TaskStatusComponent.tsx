@@ -51,17 +51,14 @@ const colorStyle = (definition: TaskStatusDefinition) =>
 const keepEditorFocus = (event: MouseEvent) => event.preventDefault()
 
 /**
- * Shows the current status. Hovering it (or tapping it on touch screens, which have no hover)
- * shows all three statuses on top of the line to pick from.
+ * Shows the current status. Clicking (or tapping) it opens all statuses next to it to pick from;
+ * clicking it again, picking one, clicking elsewhere or pressing Escape closes them.
  */
 export default function TaskStatusComponent({ nodeKey, status }: { nodeKey: NodeKey; status: TaskStatus }) {
   const [editor] = useLexicalComposerContext()
   const isEditable = useLexicalEditable()
   const rootRef = useRef<HTMLSpanElement>(null)
-  /** Opened by a tap. Hover opening is pure CSS (see TaskStatus.scss). */
   const [isOpen, setIsOpen] = useState(false)
-  /** Set after picking, so the picker closes even though the mouse is still over it. */
-  const [justPicked, setJustPicked] = useState(false)
   const current = getTaskStatusDefinition(status)
 
   useEffect(() => {
@@ -102,7 +99,6 @@ export default function TaskStatusComponent({ nodeKey, status }: { nodeKey: Node
     event.preventDefault()
     event.stopPropagation()
     setIsOpen(false)
-    setJustPicked(true)
     if (!isEditable || next === status) {
       return
     }
@@ -117,13 +113,7 @@ export default function TaskStatusComponent({ nodeKey, status }: { nodeKey: Node
   return (
     <span
       ref={rootRef}
-      className={classNames(
-        'task-status',
-        isOpen && 'task-status--open',
-        justPicked && 'task-status--picked',
-        !isEditable && 'task-status--readonly',
-      )}
-      onMouseLeave={() => setJustPicked(false)}
+      className={classNames('task-status', isOpen && 'task-status--open', !isEditable && 'task-status--readonly')}
     >
       <button
         type="button"
