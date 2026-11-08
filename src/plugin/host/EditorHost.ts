@@ -8,6 +8,12 @@ export type HostNote = {
   preview_plain: string
   locked: boolean
   spellcheck?: boolean
+  /**
+   * Whether Standard Notes has synced the note with its server. False for the read-only copies it shows in
+   * its conversion dialog and note history, where a plugin that saves gets an error message, and for notes
+   * in accounts without sync.
+   */
+  synced: boolean
 }
 
 export type NoteUpdateInfo = {

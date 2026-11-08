@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { PrefKey, SNNote } from '@standardnotes/snjs'
 import ApplicationProvider from '@/Components/ApplicationProvider'
 import { SuperEditor } from '@/Components/SuperEditor/SuperEditor'
-import { EditorHost } from './host/EditorHost'
+import { EditorHost, HostNote } from './host/EditorHost'
 import { PluginApplication, parseEnvironment, parsePlatform } from './PluginApplication'
 import { PluginNoteController } from './PluginNoteController'
 import { PluginPreferences } from './PluginPreferences'
-import { PreparedContent, prepareNoteContent } from './editor/SuperContent'
+import { PreparedContent, getSuperPreview, isRawTextPreview, prepareNoteContent } from './editor/SuperContent'
 import { ConnectionProblem } from './ConnectionProblem'
 
 type LoadedNote = {
@@ -46,6 +46,33 @@ function UnsupportedContent() {
 /** How long to wait for the note before showing ConnectionProblem instead of a blank editor. */
 const NoteWaitTimeoutMs = 6000
 
+/**
+ * Standard Notes' "Convert to Super Extended" dialog saves the note with the start of its JSON as the
+ * preview, so the notes list shows {"root":{"children":... The editor only saves a preview when the note
+ * changes, so put the text preview back as soon as the note opens. Only for synced notes: the read-only
+ * copies in the conversion dialog and note history never are, and saving them shows an error message.
+ */
+function replaceRawPreview(controller: PluginNoteController, note: HostNote, content: PreparedContent): void {
+  if (content.kind !== 'ok' || content.convertedFrom || !note.synced || note.locked) {
+    return
+  }
+  if (!isRawTextPreview(note.preview_plain, note.text)) {
+    return
+  }
+  try {
+    const preview = getSuperPreview(note.text)
+    if (preview !== note.preview_plain) {
+      void controller.saveAndAwaitLocalPropagation({
+        text: note.text,
+        isUserModified: false,
+        previews: { previewPlain: preview },
+      })
+    }
+  } catch (error) {
+    console.error('Could not replace the note preview', error)
+  }
+}
+
 export function PluginRoot({ host }: { host: EditorHost }) {
   const [application, setApplication] = useState<PluginApplication>()
   const [loaded, setLoaded] = useState<LoadedNote>()
@@ -82,7 +109,9 @@ export function PluginRoot({ host }: { host: EditorHost }) {
 
         if (!controller || controller.item.uuid !== note.uuid) {
           controller = new PluginNoteController(host, note)
-          setLoaded({ controller, note: controller.item, content: prepareNoteContent(note.text) })
+          const content = prepareNoteContent(note.text)
+          setLoaded({ controller, note: controller.item, content })
+          replaceRawPreview(controller, note, content)
           return
         }
 

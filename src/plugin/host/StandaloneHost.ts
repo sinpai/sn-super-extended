@@ -61,6 +61,7 @@ export class StandaloneHost implements EditorHost {
     text: WelcomeMarkdown,
     preview_plain: '',
     locked: false,
+    synced: false,
   }
 
   start({ onReady, onNote }: HostCallbacks): void {

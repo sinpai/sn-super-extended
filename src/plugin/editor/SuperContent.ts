@@ -2,6 +2,8 @@ import { createHeadlessEditor } from '@lexical/headless'
 import { $createParagraphNode, $getRoot } from 'lexical'
 import { HeadlessSuperConverter } from '@/Components/SuperEditor/Tools/HeadlessSuperConverter'
 import { BlockEditorNodes } from '@/Components/SuperEditor/Lexical/Nodes/AllNodes'
+import { handleEditorChange } from '@/Components/SuperEditor/Utils'
+import { NotePreviewCharLimit } from '@plugin/config'
 
 let converter: HeadlessSuperConverter | undefined
 const getConverter = () => (converter ??= new HeadlessSuperConverter())
@@ -66,4 +68,27 @@ function getEmptySuperString(): string {
     emptySuperString = JSON.stringify(editor.getEditorState().toJSON())
   }
   return emptySuperString
+}
+
+/** The notes list preview for Super JSON, the same one the editor saves with each change (handleEditorChange). */
+export function getSuperPreview(superString: string): string {
+  const editor = createHeadlessEditor({ nodes: BlockEditorNodes, onError: console.error })
+  const editorState = editor.parseEditorState(superString)
+  let preview = ''
+  editorState.read(() =>
+    handleEditorChange(editorState, NotePreviewCharLimit, (_value, previewText) => {
+      preview = previewText
+    }),
+  )
+  return preview
+}
+
+/**
+ * Whether the preview is the start of the note's raw text, which Standard Notes uses when it saves a note's
+ * text without a preview, e.g. in its "Convert to Super Extended" dialog. For Super notes that is JSON
+ * ({"root":{"children":...), which the notes list then shows.
+ */
+export function isRawTextPreview(preview: string, text: string): boolean {
+  const start = preview.replace(/(\.\.\.|…)$/, '')
+  return start.length > 0 && text.startsWith(start)
 }

@@ -26,6 +26,19 @@ type PendingSave = { uuid: string; text: string; previewPlain: string }
 /** The relay's own item type uses a ContentType enum; the item we pass is the one it streamed to us. */
 type RelayItemPayload = Parameters<ComponentRelay['saveItemWithPresave']>[0]
 
+/**
+ * Standard Notes sends the time of the note's last sync as updated_at (ComponentViewer.jsonForItem):
+ * a Date, or a string on phones, where messages are JSON. Notes that never synced have 1970, like the
+ * template items behind its read-only previews.
+ */
+function hasSynced(item: RelayItem): boolean {
+  const updatedAt = item.updated_at
+  if (!(updatedAt instanceof Date) && typeof updatedAt !== 'string' && typeof updatedAt !== 'number') {
+    return false
+  }
+  return new Date(updatedAt).getTime() > 0
+}
+
 function toHostNote(item: RelayItem): HostNote {
   const appData = item.content.appData?.[AppDataDomain]
   return {
@@ -35,6 +48,7 @@ function toHostNote(item: RelayItem): HostNote {
     preview_plain: item.content.preview_plain ?? '',
     locked: Boolean(appData?.locked),
     spellcheck: item.content.spellcheck,
+    synced: hasSynced(item),
   }
 }
 

@@ -59,7 +59,7 @@ Standard Notes runs plugins in a sandboxed frame that can only see the note bein
 
 ### Moving notes between Super and Super Extended
 
-- **From Super to Super Extended:** Standard Notes shows a conversion dialog. **Convert** and **Convert As-Is** both keep the content unchanged.
+- **From Super to Super Extended:** Standard Notes shows a conversion dialog. **Convert** and **Convert As-Is** both keep the content unchanged. The dialog sets the note's preview in the notes list to its raw data (`{"root":…`). Super Extended puts the text back when it opens the note, which happens right after converting; in an account without sync, the next time you edit the note.
 - **From Super Extended to Super:** choose **Convert As-Is**. The default **Convert** button reads the note as HTML and garbles it.
 - **Notes that contain Task Status lines can't be opened in built-in Super**, which doesn't know that block. Keep them in Super Extended; their content isn't changed or lost.
 - **Plain text and Markdown notes** are converted the first time you open them in Super Extended. The original text stays until you edit the note.
@@ -90,7 +90,7 @@ npm run dev
 | URL | What it is |
 | --- | --- |
 | http://localhost:5173/ | Standalone mode. The note is kept in the browser's localStorage. Fastest way to work on the editor. |
-| http://localhost:5173/dev/host.html | Test harness that embeds the plugin the way Standard Notes does (same iframe sandbox and message protocol). Buttons simulate "Prevent editing", edits from another device, renaming, switching notes, Markdown notes and a dark theme. |
+| http://localhost:5173/dev/host.html | Test harness that embeds the plugin the way Standard Notes does (same iframe sandbox and message protocol). Buttons simulate "Prevent editing", edits from another device, renaming, switching notes, Markdown notes, the app's conversion from Super, its read-only copies (note history) and a dark theme. |
 | http://localhost:5173/ext.json | Manifest for installing the dev server in the Standard Notes desktop app. The app loads it from the dev server instead of keeping a copy, so changes show up when you reopen a note. |
 
 Other scripts: `npm run typecheck`, `npm run build`, and `npm run preview`, which serves `dist/` on port 4173. To test the production build in the harness, open `dev/host.html?plugin=http://localhost:4173/`.

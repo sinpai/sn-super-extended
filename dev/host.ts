@@ -9,6 +9,8 @@
 type Note = {
   uuid: string
   content_type: 'Note'
+  /** Time of the last sync; Standard Notes sends 1970 for notes that never synced. */
+  updated_at?: string
   content: {
     title: string
     text: string
@@ -38,6 +40,11 @@ let streamContextMessage: Message | undefined
 let componentData: Record<string, unknown> = {}
 let darkTheme = false
 let saveCount = 0
+/**
+ * Set while showing a read-only copy of the note, like Standard Notes' conversion dialog and note history do:
+ * a template item that never synced (new uuid, updated_at 1970). Standard Notes refuses saves to it.
+ */
+let readonlyCopy: Note | undefined
 
 const MarkdownSample = `# Imported from Markdown
 
@@ -55,6 +62,7 @@ function newNote(uuid: string, title: string, text = ''): Note {
   return {
     uuid,
     content_type: 'Note',
+    updated_at: new Date().toISOString(),
     content: { title, text, preview_plain: '', references: [], appData: { 'org.standardnotes.sn': {} } },
   }
 }
@@ -99,7 +107,8 @@ function render() {
   $('saved-text').textContent = pretty
   $('saved-preview').textContent = note.content.preview_plain || '(empty)'
   const locked = note.content.appData['org.standardnotes.sn'].locked
-  $('note-meta').textContent = `— ${note.content.title}${locked ? ' (editing disabled)' : ''} · saves: ${saveCount}`
+  const mode = readonlyCopy ? ' (read-only copy)' : locked ? ' (editing disabled)' : ''
+  $('note-meta').textContent = `— ${note.content.title}${mode} · saves: ${saveCount}`
 }
 
 function post(message: Record<string, unknown>) {
@@ -115,7 +124,7 @@ function reply(original: Message, data: Record<string, unknown>) {
 
 function sendContextItem(isMetadataUpdate = false) {
   if (!streamContextMessage) return
-  reply(streamContextMessage, { item: { ...structuredClone(currentNote()), isMetadataUpdate } })
+  reply(streamContextMessage, { item: { ...structuredClone(readonlyCopy ?? currentNote()), isMetadataUpdate } })
 }
 
 function themeUrls(): string[] {
@@ -143,6 +152,11 @@ window.addEventListener('message', (event: MessageEvent) => {
       sendContextItem()
       break
     case 'save-items': {
+      if (readonlyCopy) {
+        // Like Standard Notes: an error message and no reply.
+        alert('Super Extended is trying to save, but it is in a locked state and cannot accept changes.')
+        break
+      }
       const items = message.data.items as Note[]
       for (const item of items) {
         const index = state.notes.findIndex((note) => note.uuid === item.uuid)
@@ -151,7 +165,11 @@ window.addEventListener('message', (event: MessageEvent) => {
           alert('The note you are attempting to save has editing disabled')
           continue
         }
-        state.notes[index] = { ...state.notes[index], content: { ...item.content } as Note['content'] }
+        state.notes[index] = {
+          ...state.notes[index],
+          updated_at: new Date().toISOString(),
+          content: { ...item.content } as Note['content'],
+        }
       }
       saveCount++
       persist()
@@ -224,6 +242,25 @@ $('load-markdown').onclick = () => {
   // Like Standard Notes, opening another note recreates the editor iframe.
   iframe.src = iframe.src
   render()
+}
+
+// Like Standard Notes' "Convert to Super Extended" dialog (SuperNoteConverter): it saves the note with the start
+// of the raw text as the preview, then opens the note in the plugin.
+$('convert-from-super').onclick = () => {
+  const note = currentNote()
+  const text = note.content.text
+  note.content.preview_plain = text.substring(0, 160) + (text.length > 160 ? '...' : '')
+  persist()
+  render()
+  iframe.src = iframe.src
+}
+
+$('toggle-readonly-copy').onclick = () => {
+  readonlyCopy = readonlyCopy
+    ? undefined
+    : { ...structuredClone(currentNote()), uuid: crypto.randomUUID(), updated_at: new Date(0).toISOString() }
+  render()
+  iframe.src = iframe.src
 }
 
 $('toggle-theme').onclick = () => {
