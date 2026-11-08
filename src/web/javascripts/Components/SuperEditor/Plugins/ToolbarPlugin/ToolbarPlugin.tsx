@@ -952,6 +952,13 @@ const ToolbarPlugin = () => {
           className="!px-0"
           onClick={() => setIsTextStyleMenuOpen(false)}
         >
+          {/* [sn-super-extended] First, like in the "/" menu */}
+          <ToolbarMenuItem
+            name={TaskStatusBlock.name}
+            iconName={TaskStatusBlock.iconName}
+            onClick={() => TaskStatusBlock.onSelect(editor)}
+          />
+          <MenuItemSeparator />
           <ToolbarMenuItem
             name={c('B3.Notes.EditorToolbar.Label').t`Normal`}
             iconName="paragraph"
@@ -994,12 +1001,6 @@ const ToolbarPlugin = () => {
             iconName="list-check"
             active={blockType === 'check'}
             onClick={() => ChecklistBlock.onSelect(editor)}
-          />
-          {/* [sn-super-extended] */}
-          <ToolbarMenuItem
-            name={TaskStatusBlock.name}
-            iconName={TaskStatusBlock.iconName}
-            onClick={() => TaskStatusBlock.onSelect(editor)}
           />
           <MenuItemSeparator />
           <ToolbarMenuItem
