@@ -3,7 +3,7 @@
  * (note.editorIdentifier), so pick it once and keep it stable. Changing it later makes
  * existing notes fall back to the plain text editor.
  *
- * The same values are used to generate dist/ext.json (see scripts/write-manifest.mjs).
+ * The same values are used to generate dist/ext.json and the desktop zip (see vite.config.ts).
  */
 export const PluginConfig = {
   identifier: 'com.sn-super-extended.editor',

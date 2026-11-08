@@ -32,9 +32,11 @@ jobs:
       - run: npm ci
 
       # PLUGIN_URL makes the build write dist/ext.json pointing at this Pages site.
+      # PLUGIN_BUILD gives every deploy a higher version, which the desktop app needs to update its copy.
       - run: npm run build
         env:
           PLUGIN_URL: ${{ steps.pages.outputs.base_url }}/
+          PLUGIN_BUILD: ${{ github.run_number }}
 
       - uses: actions/upload-pages-artifact@v5
         with:

@@ -23,7 +23,7 @@ Everything from Super: the formatting toolbar, the `/` block menu, Markdown shor
 
 A status box at the start of a line: **To do** (blue), **In progress** (orange), **Done** (green) or **Cancelled** (red). Click it (tap on phones) to show all four next to it, then pick one. Clicking the box again, clicking elsewhere or pressing Escape closes them. Cancelled tasks are struck through and dimmed, like checked checklist items; only the display changes, the text stays as you typed it. Task lines work like checklist items:
 
-- Type `][` and a space at the start of a line, the same way `[]` and a space makes a checkbox. You can also type `/task`, or use the toolbar's block menu → **Task Status** to convert the current line or every selected line.
+- Type `][` and a space at the start of a line, the same way `[]` and a space makes a checkbox. You can also type `/` and press Enter (Task Status is the first item in the menu), or use the toolbar's block menu → **Task Status** to convert the current line or every selected line.
 - Press Enter to start the next task (To do). Enter at the start of a task adds an empty task above it. Enter on an empty task ends the list.
 - The status stays at the start of the line: the cursor can't go in front of it, and long text wraps under the text rather than under the box.
 - Backspace right after the status turns the line back into normal text.
@@ -67,11 +67,16 @@ Standard Notes runs plugins in a sandboxed frame that can only see the note bein
 
 ### Privacy
 
-Super Extended is a static web page with no server and no analytics. Standard Notes loads it in a sandboxed frame and gives it the decrypted text of the note you open with it. The plugin never sends note content anywhere except back to Standard Notes when it saves. Like any third-party plugin, it is loaded from its host (here, GitHub Pages) each time. All the code is in this repository; you can review it or [host your own copy](#hosting-your-own-copy).
+Super Extended is a static web page with no server and no analytics. Standard Notes loads it in a sandboxed frame and gives it the decrypted text of the note you open with it. The plugin never sends note content anywhere except back to Standard Notes when it saves. The desktop app downloads it from its host (here, GitHub Pages) once per version and loads it from your computer; phones and the web app load it from the host each time. All the code is in this repository; you can review it or [host your own copy](#hosting-your-own-copy).
 
 ### Updates
 
-New versions are published automatically when the repository's `main` branch changes. Standard Notes loads the plugin from the same URL every time, so you get updates after the app reloads, without reinstalling.
+New versions are published automatically when the repository's `main` branch changes.
+
+- **Desktop app:** keeps a copy of the plugin on your computer, so notes open without waiting for the network, even offline. When the app starts, it checks for a new version and downloads it in the background; notes you open after that use it.
+- **Phones and the web app:** load the plugin from GitHub Pages when you open a note (Standard Notes doesn't keep copies of third-party plugins there), so you get updates after the app reloads.
+
+If you installed Super Extended while it was version 0.1.0, the desktop app still loads it from GitHub Pages every time: it only learns about the local copy when the plugin is installed. Remove Super Extended in **Preferences → Plugins** and install it again from the same URL. Notes that use it aren't changed and open in Super Extended again once it's back.
 
 ## Development
 
@@ -86,7 +91,7 @@ npm run dev
 | --- | --- |
 | http://localhost:5173/ | Standalone mode. The note is kept in the browser's localStorage. Fastest way to work on the editor. |
 | http://localhost:5173/dev/host.html | Test harness that embeds the plugin the way Standard Notes does (same iframe sandbox and message protocol). Buttons simulate "Prevent editing", edits from another device, renaming, switching notes, Markdown notes and a dark theme. |
-| http://localhost:5173/ext.json | Manifest for installing the dev server in the Standard Notes desktop app. |
+| http://localhost:5173/ext.json | Manifest for installing the dev server in the Standard Notes desktop app. The app loads it from the dev server instead of keeping a copy, so changes show up when you reopen a note. |
 
 Other scripts: `npm run typecheck`, `npm run build`, and `npm run preview`, which serves `dist/` on port 4173. To test the production build in the harness, open `dev/host.html?plugin=http://localhost:4173/`.
 
@@ -141,15 +146,15 @@ The plugin talks to Standard Notes through a copy of [`@standardnotes/component-
 
 ### Hosting your own copy
 
-**On GitHub Pages:** fork the repository, then set **Settings → Pages → Source** to **GitHub Actions**. The workflow in `.github/workflows/deploy.yml` builds and publishes on every push to `main`. Your install URL is `https://<user>.github.io/<repo>/ext.json`.
+**On GitHub Pages:** fork the repository, then set **Settings → Pages → Source** to **GitHub Actions**. The workflow in `.github/workflows/deploy.yml` builds and publishes every push to `main` as a new version. Your install URL is `https://<user>.github.io/<repo>/ext.json`.
 
 **Elsewhere:** build with the public URL where the files will be served, then upload `dist/` to any static HTTPS host:
 
 ```sh
-PLUGIN_URL=https://example.com/super-extended/ npm run build
+PLUGIN_URL=https://example.com/super-extended/ PLUGIN_BUILD=1 npm run build
 ```
 
-This writes `dist/ext.json`, which is the URL to install. The host must serve `ext.json` with an `Access-Control-Allow-Origin` header. Standard Notes rejects plugin URLs that contain one of its own identifiers (`org.standardnotes.…`).
+This writes `dist/ext.json`, which is the URL to install, and `dist/sn-super-extended.zip`, the copy the desktop app downloads. The desktop app only replaces its copy when `ext.json` has a higher version, so increase `PLUGIN_BUILD` each time you publish. It becomes the last part of the version: `PLUGIN_BUILD=2` publishes 0.1.2. The host must serve `ext.json` with an `Access-Control-Allow-Origin` header. Standard Notes rejects plugin URLs that contain one of its own identifiers (`org.standardnotes.…`).
 
 **Identifier:** every note records the identifier of the editor it uses. If you want your copy installed alongside this one, change `identifier` and `name` in `src/plugin/config.ts` before you use it. Changing the identifier later makes existing notes open in the plain text editor until you switch them back.
 

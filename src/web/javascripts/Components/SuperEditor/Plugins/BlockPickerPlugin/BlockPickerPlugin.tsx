@@ -63,6 +63,7 @@ export default function BlockPickerMenuPlugin({ popoverZIndex }: { popoverZIndex
       : []
 
     const baseOptions = [
+      GetTaskStatusBlockOption(editor), // [sn-super-extended] First, so "/" then Enter starts a task line
       GetParagraphBlockOption(editor),
       GetH1BlockOption(editor),
       GetH2BlockOption(editor),
@@ -82,7 +83,6 @@ export default function BlockPickerMenuPlugin({ popoverZIndex }: { popoverZIndex
       GetNumberedListBlockOption(editor),
       GetBulletedListBlockOption(editor),
       GetChecklistBlockOption(editor),
-      GetTaskStatusBlockOption(editor), // [sn-super-extended]
       GetQuoteBlockOption(editor),
       GetCodeBlockOption(editor),
       GetDividerBlockOption(editor),
